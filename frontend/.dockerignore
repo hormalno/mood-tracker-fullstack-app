@@ -1,0 +1,19 @@
+# Ignore node modules (huge, will be reinstalled in Docker anyway)
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Ignore build outputs (Docker will create these fresh)
+build/
+dist/
+
+# Ignore local dev config and editor files
+.vscode/
+.idea/
+.env
+.env.*
+
+# Git-related
+.git/
+.gitignore

@@ -1,16 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
+import { useEffect, useState } from 'react';
+
 function App() {
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    fetch('http://localhost:8000/api/ping')
+      .then(res => res.json())
+      .then(data => setMessage(data.message))
+      .catch(err => console.error('Backend connection failed:', err));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </header>
+    <div>
+      <h1>Frontend + Backend Test</h1>
+      <p>Backend says: {message || 'Loading...'}</p>
     </div>
   );
 }

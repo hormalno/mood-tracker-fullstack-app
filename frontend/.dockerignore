@@ -11,8 +11,6 @@ dist/
 # Ignore local dev config and editor files
 .vscode/
 .idea/
-.env
-.env.*
 
 # Git-related
 .git/

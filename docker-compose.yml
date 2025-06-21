@@ -12,18 +12,22 @@ services:
       - ./backend:/app
     depends_on:
       - db
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
     container_name: mood_frontend
     ports:
       - "3000:3000"
+    env_file:
+      - ./frontend/.env.docker
     stdin_open: true
     tty: true
     volumes:
       - ./frontend:/app
     depends_on:
       - backend
+    restart: unless-stopped
 
   db:
     image: postgres:15

@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - ./backend/.env
+      - ./backend/.env.docker
     volumes:
       - ./backend:/app
     depends_on:
@@ -30,13 +30,13 @@ services:
     restart: unless-stopped
 
   db:
-    image: postgres:15
+    image: postgres:17
     container_name: mood_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: moods
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mood_tracker
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:

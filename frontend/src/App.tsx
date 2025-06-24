@@ -10,6 +10,8 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/home' element={<Home />} />
           <Route path='/calendar' element={<Home />} />
+          <Route path='/login' element={<Home />} />
+          <Route path='/register' element={<Home />} />
         </Routes>
       </BrowserRouter>
     </div>

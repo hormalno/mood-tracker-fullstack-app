@@ -1,7 +1,7 @@
 import PostMood from "../components/PostMood";
 import MoodNavbar from "../components/MoodNavbar";
 
-const Calendar = () => {
+const Post = () => {
     return (
         <div>
             <MoodNavbar />
@@ -10,4 +10,4 @@ const Calendar = () => {
     )
 }
 
-export default Calendar;
+export default Post;

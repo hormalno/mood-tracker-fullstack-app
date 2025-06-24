@@ -5,8 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Alert, Box, Button, MenuItem, TextField, Typography } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers";
 import dayjs, { Dayjs } from "dayjs";
-
-const moodOptions = ["happy", "sad", "angry", "neutral", "excited"];
+import { moodList } from "./MoodType";
+import MoodIcon from "./MoodIcon";
 
 const PostMood = ()  => {
     const [mood, setMood] = useState("");
@@ -20,7 +20,6 @@ const PostMood = ()  => {
             setError("Please select a date and a mood.");
             return;
         }
-
         setError("");
         setSuccess(false);
 
@@ -68,9 +67,9 @@ const PostMood = ()  => {
         onChange={(e) => setMood(e.target.value)}
         margin="normal"
       >
-        {moodOptions.map((option) => (
+        {moodList.map((option) => (
           <MenuItem key={option} value={option}>
-            {option.charAt(0).toUpperCase() + option.slice(1)}
+            <MoodIcon mood={option} />&nbsp;{option}
           </MenuItem>
         ))}
       </TextField>

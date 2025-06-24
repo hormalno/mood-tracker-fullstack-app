@@ -1,16 +1,11 @@
+import { MoodType, moodIcons } from "./MoodType";
+
 type Props = {
-    mood: string;
+    mood: MoodType;
 }
 
 const MoodIcon = ({mood}: Props) => {
-    const icons: Record<string, string> = {
-        happy: "😊",
-        content: "😌",
-        neutral: "😐",
-        angry: "😠",
-        sad: "😢",
-    }
-    return <span>{icons[mood] || "❓"}</span>
+    return <span>{moodIcons[mood] || "❓"}</span>
 }
 
 export default MoodIcon;

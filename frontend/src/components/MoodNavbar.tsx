@@ -8,11 +8,11 @@ import Container from '@mui/material/Container';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import { Link } from 'react-router-dom';
 
-function MoodNavbar() {
+const MoodNavbar = () => {
 
   const pages = [
     {label: "Home", path: "/home"}, 
-    {label: "Calendar", path: "/calendar"}
+    {label: "Post", path: "/postmood"}
   ];
 
   return (    

@@ -1,6 +1,12 @@
+import PostMood from "../components/PostMood";
+import MoodNavbar from "../components/MoodNavbar";
+
 const Calendar = () => {
     return (
-        <div></div>
+        <div>
+            <MoodNavbar />
+            <PostMood />
+        </div>
     )
 }
 

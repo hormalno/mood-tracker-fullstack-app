@@ -1,15 +1,10 @@
-
-import MoodCalender from "../components/MoodCalendar";
-import MoodForm from "../components/MoodForm";
 import MoodNavbar from "../components/MoodNavbar";
 
 const Home = () => {
     return (
-        <>
+        <div>
             <MoodNavbar />
-            {/* <MoodForm />
-            <MoodCalender /> */}
-        </>
+        </div>
     );
 }
 

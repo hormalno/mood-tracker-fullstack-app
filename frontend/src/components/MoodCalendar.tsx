@@ -8,6 +8,7 @@ import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
 import { getMoods } from '../api/mood';
 import { useEffect, useRef, useState } from 'react';
 import useAuth from '../hooks/useAuth';
+import { Alert, Box } from '@mui/material';
 
 async function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
   
@@ -43,7 +44,7 @@ const MoodCalendar = () => {
   const requestAbortController = useRef<AbortController | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
-  const {isAuthenticated} = useAuth();
+  const isAuthenticated = useAuth().isAuthenticated;
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
@@ -85,9 +86,17 @@ const MoodCalendar = () => {
     fetchHighlightedDays(date);
   };
 
+  if (!isAuthenticated) {
+      return (
+          <Box sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
+              <Alert severity="warning">You must be logged in to see your mood calendar.</Alert>
+          </Box>
+      );
+  }
+
   return (
-    <div style={{display: "flex",
-        justifyContent: "center", }}>
+    <div style={{display: "flex", justifyContent: "center", }}>
+      {isAuthenticated && (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar
             sx={{transform: "scale(2)", transformOrigin: "top center"}}
@@ -102,7 +111,7 @@ const MoodCalendar = () => {
             } as any,
             }}
         />
-        </LocalizationProvider>
+        </LocalizationProvider>)}
     </div>
   );
 }

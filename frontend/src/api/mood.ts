@@ -13,11 +13,15 @@ export const getMoods = async (): Promise<MoodEntry[]> => {
 };
 
 // Post a new mood
-export const postMood = async (moodData: { date: string; mood: string }): Promise<void> => {
+export const postMood = async (moodData: { date: string; mood: string; note?: string }): Promise<void> => {
   try {
-    await api.post("/moods", moodData);
+    await api.post("/api/mood/", moodData);
   } catch (error: any) {
+    let message = "Failed to create mood";
+    if (error.response && error.response.data && error.response.data.detail) {
+      message = error.response.data.detail;
+    }
     console.error("Error posting mood:", error);
-    throw new Error("Failed to create mood");
+    throw new Error(message);
   }
 };

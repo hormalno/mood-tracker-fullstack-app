@@ -1,4 +1,3 @@
-import * as React from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import Badge from '@mui/material/Badge';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -6,29 +5,19 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { PickersDay, PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import { DayCalendarSkeleton } from '@mui/x-date-pickers/DayCalendarSkeleton';
+import { getMoods } from '../api/mood';
+import { useEffect, useRef, useState } from 'react';
+import useAuth from '../hooks/useAuth';
 
-function getRandomNumber(min: number, max: number) {
-  return Math.round(Math.random() * (max - min) + min);
-}
+async function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
+  
+  const moods = await getMoods();
 
-/**
- * Mimic fetch with abort controller https://developer.mozilla.org/en-US/docs/Web/API/AbortController/abort
- * ⚠️ No IE11 support
- */
-function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
-  return new Promise<{ daysToHighlight: number[] }>((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      const daysInMonth = date.daysInMonth();
-      const daysToHighlight = [1, 2, 3].map(() => getRandomNumber(1, daysInMonth));
+  const daysToHighlight = moods
+    .filter((mood: any) => dayjs(mood.date).isSame(date, 'month'))
+    .map((mood: any) => dayjs(mood.date).date());
 
-      resolve({ daysToHighlight });
-    }, 500);
-
-    signal.onabort = () => {
-      clearTimeout(timeout);
-      reject(new DOMException('aborted', 'AbortError'));
-    };
-  });
+  return { daysToHighlight };  
 }
 
 const initialValue = dayjs('2022-04-17');
@@ -51,9 +40,10 @@ function ServerDay(props: PickersDayProps & { highlightedDays?: number[] }) {
 }
 
 const MoodCalendar = () => {
-  const requestAbortController = React.useRef<AbortController | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [highlightedDays, setHighlightedDays] = React.useState([1, 2, 15]);
+  const requestAbortController = useRef<AbortController | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [highlightedDays, setHighlightedDays] = useState<number[]>([]);
+  const {isAuthenticated} = useAuth();
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
@@ -65,7 +55,6 @@ const MoodCalendar = () => {
         setIsLoading(false);
       })
       .catch((error) => {
-        // ignore the error if it's caused by `controller.abort`
         if (error.name !== 'AbortError') {
           throw error;
         }
@@ -73,12 +62,16 @@ const MoodCalendar = () => {
 
     requestAbortController.current = controller;
   };
-
-  React.useEffect(() => {
+  
+  useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+    
     fetchHighlightedDays(initialValue);
     // abort request on unmount
     return () => requestAbortController.current?.abort();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleMonthChange = (date: Dayjs) => {
     if (requestAbortController.current) {
@@ -97,17 +90,12 @@ const MoodCalendar = () => {
         justifyContent: "center", }}>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar
-            sx={{
-                transform: "scale(2)",
-                transformOrigin: "top center",
-            }}
+            sx={{transform: "scale(2)", transformOrigin: "top center"}}
             defaultValue={initialValue}
             loading={isLoading}
             onMonthChange={handleMonthChange}
             renderLoading={() => <DayCalendarSkeleton />}
-            slots={{
-            day: ServerDay,
-            }}
+            slots={{day: ServerDay}}
             slotProps={{
             day: {
                 highlightedDays,

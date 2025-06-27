@@ -4,7 +4,7 @@ import api from "../services/Axios";
 // Get all moods
 export const getMoods = async (): Promise<MoodEntry[]> => {
   try {
-    const res = await api.get<MoodEntry[]>("/moods");
+    const res = await api.get<MoodEntry[]>("/api/mood/");
     return res.data;
   } catch (error: any) {
     console.error("Error fetching moods:", error);

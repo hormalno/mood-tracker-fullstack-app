@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Container from '@mui/material/Container';
 import AddReactionIcon from '@mui/icons-material/AddReaction';
 import { Link } from 'react-router-dom';
+import useAuth from '../hooks/useAuth';
 
 const MoodNavbar = () => {
 
@@ -14,6 +15,8 @@ const MoodNavbar = () => {
     {label: "Home", path: "/home"}, 
     {label: "Post", path: "/postmood"}
   ];
+
+  const { isAuthenticated, logout } = useAuth();
 
   return (    
     <AppBar position="static">
@@ -46,13 +49,22 @@ const MoodNavbar = () => {
             </Box>
           </Box>
           <Box>
-            <Button 
-              color="inherit"
-              component={Link}
-              to="/login"
-            >
-              Login
-            </Button>
+            {isAuthenticated ? (
+              <Button 
+                color="inherit"
+                onClick={logout}
+              >
+                Logout
+              </Button>
+            ) : (
+              <Button 
+                color="inherit"
+                component={Link}
+                to="/login"
+              >
+                Login
+              </Button>
+            )}
           </Box>
         </Toolbar>
       </Container>

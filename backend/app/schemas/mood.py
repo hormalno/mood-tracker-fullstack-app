@@ -12,6 +12,8 @@ class MoodCreate(BaseModel):
 class MoodRead(BaseModel):
     id: int
     user_id: int
+    date: date
+    mood: str
 
     class Config:
         orm_mode = True

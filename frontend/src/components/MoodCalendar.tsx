@@ -17,17 +17,13 @@ async function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
   const daysToHighlight = moods
     .filter((mood: any) => dayjs(mood.date).isSame(date, 'month'))
     .map((mood: any) => dayjs(mood.date).date());
-
+    console.log("days for highligh", daysToHighlight)
   return { daysToHighlight };  
 }
 
-const initialValue = dayjs('2022-04-17');
-
 function ServerDay(props: PickersDayProps & { highlightedDays?: number[] }) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
-
-  const isSelected =
-    !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
+  const isSelected = !props.outsideCurrentMonth && highlightedDays.indexOf(props.day.date()) >= 0;
 
   return (
     <Badge
@@ -48,18 +44,16 @@ const MoodCalendar = () => {
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
-    fakeFetch(date, {
-      signal: controller.signal,
+    fakeFetch(date, {signal: controller.signal})
+    .then(({ daysToHighlight }) => {
+      setHighlightedDays(daysToHighlight);
+      setIsLoading(false);
     })
-      .then(({ daysToHighlight }) => {
-        setHighlightedDays(daysToHighlight);
-        setIsLoading(false);
-      })
-      .catch((error) => {
-        if (error.name !== 'AbortError') {
+    .catch((error) => {
+      if (error.name !== 'AbortError') {
           throw error;
-        }
-      });
+      }
+    });
 
     requestAbortController.current = controller;
   };
@@ -69,8 +63,7 @@ const MoodCalendar = () => {
       return;
     }
     
-    fetchHighlightedDays(initialValue);
-    // abort request on unmount
+    fetchHighlightedDays(dayjs());
     return () => requestAbortController.current?.abort();
   }, [isAuthenticated]);
 
@@ -100,7 +93,7 @@ const MoodCalendar = () => {
         <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DateCalendar
             sx={{transform: "scale(2)", transformOrigin: "top center"}}
-            defaultValue={initialValue}
+            defaultValue={dayjs()}
             loading={isLoading}
             onMonthChange={handleMonthChange}
             renderLoading={() => <DayCalendarSkeleton />}

@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import useAuth from '../hooks/useAuth';
 import { Alert, Box } from '@mui/material';
 
-async function fakeFetch(date: Dayjs, { signal }: { signal: AbortSignal }) {
+async function fetchData(date: Dayjs, { signal }: { signal: AbortSignal }) {
   
   const moods = await getMoods();
 
@@ -44,7 +44,7 @@ const MoodCalendar = () => {
 
   const fetchHighlightedDays = (date: Dayjs) => {
     const controller = new AbortController();
-    fakeFetch(date, {signal: controller.signal})
+    fetchData(date, {signal: controller.signal})
     .then(({ daysToHighlight }) => {
       setHighlightedDays(daysToHighlight);
       setIsLoading(false);

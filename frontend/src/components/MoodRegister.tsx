@@ -1,12 +1,12 @@
 import { FormEvent, useState } from 'react';
-import { login } from '../api/user';
-import { Link, useNavigate } from 'react-router-dom';
+import { register } from '../api/user';
+import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Button, Alert } from '@mui/material';
-import Typography from '@mui/material/Typography';
 
-const MoodLogin = () => {
+const MoodRegister = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -15,9 +15,28 @@ const MoodLogin = () => {
     event.preventDefault();
     setLoading(true);
     setError('');
+
+    if (username.length < 3 || username.length > 50) {
+      setError('Username must be at least 3 characters and max 50 characters');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6 ) {
+      setError('Password must be at least 6 characters');
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      setLoading(false);
+      return;
+    }
+
     try {
-      await login(username, password);
-      navigate('/home');
+      await register(username, password);
+      navigate('/login');
     } catch (error: any) {
       // Try to extract backend error message if available
       if (error.response && error.response.data && error.response.data.detail) {
@@ -25,7 +44,7 @@ const MoodLogin = () => {
       } else if (error.message) {
         setError(error.message);
       } else {
-        setError('Wrong credentials');
+        setError('Registration failed');
       }
     } finally {
       setLoading(false);
@@ -51,37 +70,40 @@ const MoodLogin = () => {
       noValidate
       autoComplete="off"
     >
-      {/* Login fields */}
+      {/* Register fields */}
       <TextField
         required
-        id="login-username"
+        id="register-username"
         label="Username"
         value={username}
         onChange={e => setUsername(e.target.value)}
-        autoComplete="username"
       />
       <TextField
         required
-        id="login-password"
+        id="register-password"
         label="Password"
         type="password"
         value={password}
         onChange={e => setPassword(e.target.value)}
-        autoComplete="current-password"
+      />
+      <TextField
+        required
+        id="register-confirm-password"
+        label="Confirm Password"
+        type="password"
+        value={confirmPassword}
+        onChange={e => setConfirmPassword(e.target.value)}
       />
       <Button
         type="submit"
         variant="contained"
         disabled={loading}
       >
-        {loading ? "Logging in..." : "Login"}
+        {loading ? "Adding user.." : "Register"}
       </Button>
-      {error && <Alert severity="error">{error}</Alert>}      
-      <Typography variant="body1" sx={{ flexGrow: 1, textAlign: 'center' }}>
-        "Don't have an account? <Link to="/register">Register here</Link>."
-      </Typography>
+      {error && <Alert severity="error">{error}</Alert>}
     </Box>
   );
 };
 
-export default MoodLogin;
+export default MoodRegister;

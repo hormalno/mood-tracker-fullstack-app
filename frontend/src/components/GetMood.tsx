@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Box, Typography, Alert } from "@mui/material";
 import { getMoodByDate } from '../api/mood';
 import MoodIcon from "./MoodIcon";
 import { MoodType } from './MoodType';
 import { MoodEntry } from '../views/MoodEntry';
+import { Box, Typography, Alert } from "@mui/material";
+import { DateField, LocalizationProvider } from '@mui/x-date-pickers';
+import dayjs from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const GetMood = () => {
     const { date } = useParams<{ date: string }>();
@@ -32,15 +35,22 @@ const GetMood = () => {
     return (
         <Box sx={{ maxWidth: 400, mx: "auto", mt: 4, p: 3, border: "1px solid #ccc", borderRadius: 2 }}>
             <Typography variant="h6" gutterBottom>
-                Mood for {date}:
+                Mood
             </Typography>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateField
+                    label="Date"
+                    defaultValue={dayjs(date)}
+                    format="MM-DD-YYYY"
+                />
+            </LocalizationProvider>
             {mood && (
-                <>
+                <Box sx={{ mt: 2 }}>
                     <Typography>
                         <MoodIcon mood={mood.mood as MoodType} /> {mood.mood}
                     </Typography>
                     {mood.note && <Typography sx={{ mt: 2 }}>Note: {mood.note}</Typography>}
-                </>
+                </Box>
             )}
         </Box>
     );

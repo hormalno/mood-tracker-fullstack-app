@@ -10,7 +10,7 @@ import MoodIcon from "./MoodIcon";
 import useAuth from "../hooks/useAuth";
 
 const PostMood = ()  => {
-    const [mood, setMood] = useState("");
+    const [mood, setMood] = useState<string>("");
     const [date, setDate] = useState<Dayjs | null>(dayjs());
     const [note, setNote] = useState("");
     const [success, setSuccess] = useState(false);

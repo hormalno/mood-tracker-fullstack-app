@@ -14,6 +14,7 @@ class MoodRead(BaseModel):
     user_id: int
     date: date
     mood: str
+    note: Optional[str] = None
 
     class Config:
         orm_mode = True

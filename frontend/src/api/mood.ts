@@ -12,8 +12,19 @@ export const getMoods = async (): Promise<MoodEntry[]> => {
   }
 };
 
+// Get mood by date
+export const getMoodByDate = async (date: string): Promise<MoodEntry> => {
+  try {
+    const res = await api.get<MoodEntry>(`/api/mood/${date}`);
+    return res.data;
+  } catch (error: any) {
+    console.error("Error fetching mood by date:", error);
+    throw new Error("Failed to load mood for the selected date");
+  }
+};
+
 // Post a new mood
-export const postMood = async (moodData: { date: string; mood: string; note?: string }): Promise<void> => {
+export const postMood = async (moodData: Partial<MoodEntry>): Promise<void> => {
   try {
     await api.post("/api/mood/", moodData);
   } catch (error: any) {

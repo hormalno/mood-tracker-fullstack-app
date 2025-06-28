@@ -23,6 +23,8 @@ def add_mood(mood: mood_schemas.MoodCreate, db: Session = Depends(get_db),
     existing = mood_crud.get_mood_by_date(db, current_user.id, mood.date)
     if existing:
         raise HTTPException(status_code=400, detail="Mood for this date already exists")
+    if mood.date > date.today():
+        raise HTTPException(status_code=400, detail="Cannot post mood for future day")
     return mood_crud.create_mood(db, mood, current_user.id)
 
 @router.get("/{mood_date}", response_model=mood_schemas.MoodRead)

@@ -18,3 +18,4 @@ backend/.env.docker
 # OS files
 .DS_Store
 Thumbs.db
+mood-tracker-key.pem

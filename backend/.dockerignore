@@ -11,5 +11,9 @@ venv/
 .vscode/
 .idea/
 
+# Ignore environment files
+.env
+.env.docker
+
 # Ignore migrations cache (if needed)
 alembic/versions/*.pyc

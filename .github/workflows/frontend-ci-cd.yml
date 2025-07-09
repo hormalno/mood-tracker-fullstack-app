@@ -1,0 +1,35 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Log in to Amazon ECR
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Build and push Docker image to ECR
+      - name: Build and Push Docker Image
+        run: |
+          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/frontend:latest
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+
+      # Deploy to ECS
+      - name: Deploy to ECS
+        run: |
+          aws ecs update-service \
+            --cluster mood-tracker-cluster \
+            --service frontend-task-service \
+            --force-new-deployment

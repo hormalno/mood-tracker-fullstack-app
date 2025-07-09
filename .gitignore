@@ -19,3 +19,5 @@ backend/.env.docker
 .DS_Store
 Thumbs.db
 mood-tracker-key.pem
+
+admin-user_accessKeys.csv

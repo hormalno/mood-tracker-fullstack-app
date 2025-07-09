@@ -34,14 +34,7 @@ jobs:
           docker push $IMAGE_URI
           echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
 
-      # Step 4: Debug Parameters
-      - name: Debug Parameters
-        run: |
-          echo "Cluster: mood-tracker-cluster"
-          echo "Service: backend-task-service"
-          echo "Image URI: $IMAGE_URI"
-
-      # Step 5: Deploy to ECS
+      # Step 4: Deploy to ECS
       - name: Deploy to ECS
         run: |
           aws ecs update-service \

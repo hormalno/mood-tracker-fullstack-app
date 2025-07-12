@@ -53,7 +53,14 @@ jobs:
             --query 'taskDefinition' \
             --output json > task-definition.json
 
-      # Step 5: Render new ECS task definition with updated image
+      # Step 5: Clean up unsupported keys from ECS task definition
+      - name: Clean up unsupported keys from ECS task definition
+        run: |
+          jq 'del(.enableFaultInjection) |
+              .containerDefinitions |= map(del(.enableFaultInjection))' \
+              task-definition.json > clean-task-definition.json
+
+      # Step 6: Render new ECS task definition with updated image
       - name: Render new ECS task definition
         id: task_def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
@@ -62,7 +69,7 @@ jobs:
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build_image.outputs.image_uri }}
 
-      # Step 6: Deploy new ECS task definition
+      # Step 7: Deploy new ECS task definition
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:

@@ -6,7 +6,6 @@ const Home = () => {
         <div>
             <MoodNavbar />
             <h1>Welcome to the Mood Tracker</h1>
-            <p>Track your mood and see your progress over time.</p>
             <MoodCalendar />
         </div>
     );

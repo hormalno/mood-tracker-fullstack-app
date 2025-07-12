@@ -1,6 +1,7 @@
 import api from "../services/Axios";
 
 export async function login(username: string, password: string) {
+  console.log(process.env.REACT_APP_API_URL);
   const response = await api.post('/user/login', { username, password });
   const { access_token } = response.data;
   if (access_token) {

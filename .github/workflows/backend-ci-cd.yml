@@ -9,6 +9,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'backend/**'
 
 jobs:
   build-and-deploy:

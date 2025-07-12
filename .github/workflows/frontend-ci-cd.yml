@@ -9,6 +9,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'frontend/**'
 
 jobs:
   build-and-deploy:
@@ -33,11 +35,35 @@ jobs:
           docker build -t $IMAGE_URI -f frontend/Dockerfile frontend
           docker push $IMAGE_URI
           echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
+      
+      # Step 4: Download current task definition
+      - name: Download current ECS task definition
+        id: task-def
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition frontend-task \
+            --query 'taskDefinition' \
+            > task-definition.json
 
-      # Step 4: Deploy to ECS
-      - name: Deploy to ECS
+      # Step 5: Update image URI in task definition
+      - name: Update image URI in task definition
+        run: |
+          IMAGE_URI=${{ env.IMAGE_URI }}
+          cat task-definition.json | \
+          jq '.containerDefinitions[0].image = env.IMAGE_URI' \
+          > new-task-definition.json
+
+      # Step 6: Register new revision
+      - name: Register new ECS task definition revision
+        run: |
+          aws ecs register-task-definition \
+            --cli-input-json file://new-task-definition.json
+
+      # Step 7: Force ECS to use new revision
+      - name: Update ECS service to use new revision
         run: |
           aws ecs update-service \
             --cluster mood-tracker-cluster \
             --service frontend-task-service \
+            --task-definition frontend-task \
             --force-new-deployment

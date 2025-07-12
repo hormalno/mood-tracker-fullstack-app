@@ -4,6 +4,10 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_REPOSITORY: mood-tracker-app/frontend   # set this to your Amazon ECR repository name
+  ECS_SERVICE: frontend-task-service          # set this to your Amazon ECS service name
+  ECS_CLUSTER: mood-tracker-cluster           # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: frontend-task          # set this to the path to your Amazon ECS task definition
 
 on:
   push:
@@ -19,7 +23,7 @@ jobs:
     steps:
       # Step 1: Checkout the repository
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # Step 2: Log in to Amazon ECR
       - name: Log in to Amazon ECR
@@ -29,9 +33,10 @@ jobs:
       # Step 3: Build and Push Docker Image
       - name: Build and Push Docker Image
         env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/mood-tracker-app/frontend:${IMAGE_TAG}
+          IMAGE_URI=$ECR_REGISTRY/mood-tracker-app/frontend:${IMAGE_TAG}
           docker build -t $IMAGE_URI -f frontend/Dockerfile frontend
           docker push $IMAGE_URI
           echo "IMAGE_URI=${IMAGE_URI}" >> $GITHUB_ENV
@@ -39,31 +44,23 @@ jobs:
       # Step 4: Download current task definition
       - name: Download current ECS task definition
         id: task-def
-        run: |
-          aws ecs describe-task-definition \
-            --task-definition frontend-task \
-            --query 'taskDefinition' \
-            > task-definition.json
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
 
-      # Step 5: Update image URI in task definition
-      - name: Update image URI in task definition
-        run: |
-          IMAGE_URI=${{ env.IMAGE_URI }}
-          cat task-definition.json | \
-          jq '.containerDefinitions[0].image = env.IMAGE_URI' \
-          > new-task-definition.json
-
-      # Step 6: Register new revision
+      # Step 5: Register new revision
       - name: Register new ECS task definition revision
         run: |
           aws ecs register-task-definition \
             --cli-input-json file://new-task-definition.json
 
-      # Step 7: Force ECS to use new revision
-      - name: Update ECS service to use new revision
-        run: |
-          aws ecs update-service \
-            --cluster mood-tracker-cluster \
-            --service frontend-task-service \
-            --task-definition frontend-task \
-            --force-new-deployment
+      # Step 6: Force ECS to use new revision
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

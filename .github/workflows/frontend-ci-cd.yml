@@ -5,6 +5,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   ECR_REPOSITORY: mood-tracker-app/frontend   # set this to your Amazon ECR repository name
+  CONTAINER_NAME: frontend-container          # set this to your container name in the ECS task definition
   ECS_SERVICE: frontend-task-service          # set this to your Amazon ECS service name
   ECS_CLUSTER: mood-tracker-cluster           # set this to your Amazon ECS cluster name
   ECS_TASK_DEFINITION: frontend-task          # set this to the path to your Amazon ECS task definition

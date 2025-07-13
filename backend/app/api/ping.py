@@ -2,6 +2,6 @@ from fastapi import APIRouter
 
 router = APIRouter()
 
-@router.get("/ping")
+@router.get("/health")
 def ping():
-    return {"message": "pong from backend"}
+    return {"message": "The connection is healthy!!!"}

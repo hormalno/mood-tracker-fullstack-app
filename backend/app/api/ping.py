@@ -4,4 +4,4 @@ router = APIRouter()
 
 @router.get("/")
 def ping():
-    return {"message": "The connection is healthy!!!"}
+    return {"message": "The connection is healthy!"}

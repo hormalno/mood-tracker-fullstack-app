@@ -5,7 +5,6 @@ const Home = () => {
     return (
         <div>
             <MoodNavbar />
-            <h1>Welcome to the Mood Tracker v5</h1>
             <MoodCalendar />
         </div>
     );

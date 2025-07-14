@@ -15,16 +15,20 @@ Mood Tracker is a web application that allows users to register, log in, and tra
 
 - **Frontend:** React
 - **Backend:** Python (FastAPI)
-- **Database:** PostgreSQL (AWS RDS)
+- **Database:** PostgreSQL 17 (AWS RDS)
 - **Containerization:** Docker
 - **Cloud Hosting:** AWS ECS (Elastic Container Service)
     - Cluster with one service for frontend and backend
     - RDS for PostgreSQL database
     - App Load Balancer for traffic management
-- **Docker Images:** Stored in AWS ECR (Elastic Container Registry)
+- **Docker Images:** Stored in AWS ECR (Elastic Container Registry) private repositories
 - **CI/CD:** GitHub Actions
-    - Automatic build and deployment
+    - Automatic builds a docker image and deployment
     - Updates ECS task definition and redeploys service
+
+## Live App
+
+Access the deployed application via the [App Load Balancer DNS](http://mood-tracker-alb-542910875.eu-north-1.elb.amazonaws.com).
 
 ## Architecture
 
@@ -98,15 +102,15 @@ Mood Tracker is a web application that allows users to register, log in, and tra
 - The FastAPI backend provides interactive API docs at `/docs`.
 
 ## Environment Variables
-#1. Backend:
-- `DATABASE_URL`: postgresql://[username]:[password]@localhost:5432/mood_tracker
-- `SECRET_KEY`: [your-key]
-- `DEBUG`:True
-- `ALLOWED_ORIGINS`: http://localhost:3000,http://127.0.0.1:3000
+### 1. Backend:
+- `DATABASE_URL`: postgresql://[username]:[password]@localhost:5432/mood_tracker - *Postgres connection string*
+- `SECRET_KEY`: [your-key] - *the secret key for hashing the password*
+- `DEBUG`:True - *for production set to False*
+- `ALLOWED_ORIGINS`: http://localhost:3000,... - *comma delimited paths for the frontend*
 
-#2. Frontend:
-REACT_APP_API_URL=http://localhost:8000
+### 2. Frontend:
+REACT_APP_API_URL=http://localhost:8000 - *the url to the api from python*
 
-#3. AWS Deployment
+### 3. AWS Deployment
 - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` / `AWS_REGION`
 - Other variables for ECS and frontend/backend configuration as needed.
